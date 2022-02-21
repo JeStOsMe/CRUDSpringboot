@@ -9,12 +9,15 @@ import com.sofka.demoCRUD.Repositories.IRoleJPARepository;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,6 +66,47 @@ public class RoleController {
             return new ResponseEntity<>(_role, HttpStatus.CREATED);
         } catch (Exception ex){
             return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteRole(@PathVariable("id") Long id){
+        try{
+            roleRepo.deleteById(id);
+
+            return new ResponseEntity<>("ROLE DELETED!!!", HttpStatus.NO_CONTENT);
+        } catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @DeleteMapping("/deleteall")
+    public ResponseEntity<String> deleteAllRoles(){
+        try{
+            roleRepo.deleteAll();
+
+            return new ResponseEntity<>("ALL ROLES DELETED!!!", HttpStatus.NO_CONTENT);
+        } catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    //Update the role name with the entered ID.
+    @PutMapping("/update/query")
+    public ResponseEntity<Role> updateRoleById(@RequestParam("id") Long id, @RequestBody Role role){
+        try {
+            Optional<Role> roleData = roleRepo.findById(id);
+            if (roleData.isPresent()) {
+                Role _role = roleData.get();
+                _role.setName(role.getName());
+
+                return new ResponseEntity<>(roleRepo.save(_role), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     
