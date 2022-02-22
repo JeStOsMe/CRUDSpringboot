@@ -2,6 +2,8 @@ package com.sofka.demoCRUD;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Optional;
+
 import com.sofka.demoCRUD.Models.Employee;
 import com.sofka.demoCRUD.Models.Project;
 import com.sofka.demoCRUD.Models.Role;
@@ -61,7 +63,9 @@ public class EmployeeJPARepositoryTest {
 
         repoEmpl.flush();
 
-        Employee empl124 = repoEmpl.findByEmployeeid("empl124");
+        //Para no modificar fuertemente el controlador de Employee
+        Optional<Employee> empl124aux = repoEmpl.findByEmployeeid("empl124");
+        Employee empl124 = empl124aux.get();
         assertEquals("Claire", empl124.getFirstName());
         assertEquals(2, repoEmpl.findAll().size());
         assertEquals(admin, empl124.getRole());
